@@ -1,4 +1,5 @@
 import path from 'path';
+
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import express from 'express';
@@ -6,13 +7,31 @@ import express from 'express';
 import App from '../src/App';
 
 const PORT = process.env.PORT || 4006;
+const ABORT_DELAY = 10000;
+
 const app = express();
 
 app.get('/', (req, res) => {
-    const content = ReactDOMServer.renderToString(<App />);
-    const html = `<div id="blog">${content}</div>`;
-  
-    res.send(html);
+    let isError= false;
+
+    const { pipe, abort } = ReactDOMServer.renderToPipeableStream(
+        <div id="blog"><App /></div>,
+        {
+            bootstrapScripts: ["/client.bundle.js"],
+            onShellReady() {
+                // Set error status code, if an error happened before starting streaming
+                res.statusCode = isError ? 500 : 200;
+                res.setHeader("Content-type", "text/html");
+                pipe(res);
+            },
+            onError(error) {
+                isError = true;
+                console.error(error);
+            }
+        },
+    );
+
+    setTimeout(abort, ABORT_DELAY);
 });
   
 app.listen(PORT, () => {

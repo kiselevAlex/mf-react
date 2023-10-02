@@ -1,5 +1,4 @@
 import path from 'path';
-import fs from 'fs';
 
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
@@ -8,22 +7,31 @@ import express from 'express';
 import App from '../src/App';
 
 const PORT = process.env.PORT || 3006;
+const ABORT_DELAY = 10000;
+
 const app = express();
 
 app.get('/', (req, res) => {
-    const app = ReactDOMServer.renderToString(<App />);
-    const indexFile = path.resolve('./build/index.html');
+    let isError= false;
 
-    fs.readFile(indexFile, 'utf8', (err, data) => {
-        if (err) {
-        console.error('Something went wrong:', err);
-        return res.status(500).send('Oops, better luck next time!');
-        }
+    const { pipe, abort } = ReactDOMServer.renderToPipeableStream(
+        <div id="root"><App /></div>,
+        {
+            bootstrapScripts: ["/client.bundle.js"],
+            onShellReady() {
+                // Set error status code, if an error happened before starting streaming
+                res.statusCode = isError ? 500 : 200;
+                res.setHeader("Content-type", "text/html");
+                pipe(res);
+            },
+            onError(error) {
+                isError = true;
+                console.error(error);
+            }
+        },
+    );
 
-        return res.send(
-        data.replace('<div id="root"></div>', `<div id="root">${app}</div>`)
-        );
-    });
+    setTimeout(abort, ABORT_DELAY);
 });
   
 app.listen(PORT, () => {
