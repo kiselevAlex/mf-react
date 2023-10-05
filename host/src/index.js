@@ -1,5 +1,1 @@
-import React from 'react';
-import { hydrateRoot } from 'react-dom/client';
-import App from './App';
-
-hydrateRoot(document.getElementById('root'), <App />);
+import('./bootstrap').catch((error) => console.error(error));

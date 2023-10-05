@@ -1,4 +1,8 @@
 const path = require('path');
+const webpack = require('webpack');
+const ModuleFederationPlugin = require("webpack/lib/container/ModuleFederationPlugin");
+
+const { dependencies } = require("./package.json");
 
 module.exports = {
   target: 'web',
@@ -16,4 +20,25 @@ module.exports = {
       },
     ],
   },
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env.BUILD_TARGET': '"client"',
+    }),
+    new ModuleFederationPlugin({
+        name: "Host",
+        remotes: { 
+            "Blog": "Blog@http://localhost:3006/blog/remoteEntry.js",            
+        },
+        shared: {
+            react: { // react
+                singleton: true,
+                requiredVersion: dependencies["react"],
+            },
+            "react-dom": {
+                singleton: true,
+                requiredVersion: dependencies["react-dom"],
+            },
+        },
+    }),
+  ],
 };

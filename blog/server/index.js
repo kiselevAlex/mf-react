@@ -15,9 +15,11 @@ app.get('/', (req, res) => {
     let isError= false;
 
     const { pipe, abort } = ReactDOMServer.renderToPipeableStream(
-        <div id="blog"><App /></div>,
+        // <div id="blog"><App /></div>,
+        <App />,
         {
-            bootstrapScripts: ["/client.bundle.js"],
+            // bootstrapScripts: ["/blog/client.bundle.js"],
+            // bootstrapScripts: ["/blog/remoteEntry.js"],
             onShellReady() {
                 // Set error status code, if an error happened before starting streaming
                 res.statusCode = isError ? 500 : 200;
