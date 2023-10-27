@@ -1,12 +1,16 @@
 {
-  "name": "host",
+  "name": "@mf/host",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@mf/api": "file:../api",
     "express": "^4.18.2",
     "http-proxy-middleware": "^2.0.6",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-helmet": "^6.1.0",
+    "react-router-dom": "^6.16.0",
+    "swr": "^2.2.4"
   },
   "scripts": {
     "dev:build-client": "NODE_ENV=development webpack --config webpack.client.js --mode=development -w",

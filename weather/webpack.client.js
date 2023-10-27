@@ -10,7 +10,7 @@ module.exports = {
   entry: "./client/index.js",
   output: {
     filename: "client.bundle.js",
-    path: path.resolve(__dirname, "build"),
+    path: path.resolve(__dirname, "build", "weather"),
   },
   module: {
     rules: [
@@ -21,13 +21,11 @@ module.exports = {
     ],
   },
   plugins: [
-    new webpack.DefinePlugin({
-      "process.env.BUILD_TARGET": '"client"',
-    }),
     new ModuleFederationPlugin({
-      name: "Host",
-      remotes: {
-        Weather: "Weather@http://localhost:3006/mf-weather/remoteEntry.js",
+      name: "Weather",
+      filename: "remoteEntry.js",
+      exposes: {
+        "./App": "./src/App",
       },
       shared: {
         react: {
@@ -50,6 +48,9 @@ module.exports = {
           requiredVersion: dependencies["react-router-dom"],
         },
       },
+    }),
+    new webpack.DefinePlugin({
+      "process.env.ASSET_PATH": '"/weather"',
     }),
   ],
 };

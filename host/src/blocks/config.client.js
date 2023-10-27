@@ -1,7 +1,7 @@
 import { lazy } from 'react';
 
 export default {
-    blog: {
-        component: lazy(() => import('Blog/App')),
+    weather: {
+        component: lazy(() => import('Weather/App')),
     }
 }
