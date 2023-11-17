@@ -23,7 +23,6 @@ export const render = (ctx) => {
         ? [`${process.env.ASSET_PATH}/client.bundle.js`]
         : [],
       onShellReady() {
-        // Set error status code, if an error happened before starting streaming
         res.statusCode = isError ? 500 : 200;
         res.setHeader("Content-type", "text/html");
         if (debug) {
